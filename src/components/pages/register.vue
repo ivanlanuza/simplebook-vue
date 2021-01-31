@@ -32,6 +32,8 @@
                             placeholder="You'll use this to manage your account."
                             outlined
                             v-model="account_email"
+                            v-bind:hint=success_email                              
+                            @input="checkEmail"                            
                             :rules="[rules.required, rules.validEmail]"                    
                         ></v-text-field>
                         <v-row>
@@ -80,49 +82,66 @@
     import simplebookService from "../../services/simplebook.services";
 
     export default {
-    name: 'Register',    
-    data: function () {
-        return {
-            account_url: '',
-            success_url: '',
-            show1: false,
-            show2: false,
-            confirm_password: '',
-            original_password: '',
-            account_email: '',
-            rules: {
-                required: value => !!value || 'Required.',
-                length: value => value.length >= 5 || 'Minimum 5 characters',  
-                length8: value => value.length >= 8 || 'Minimum 8 characters',  
-                passwordMatch: () => ( this.original_password == this.confirm_password ) || (`The email and password you entered don't match`),
-                validEmail: function(account_email) {
-                    var re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-                    return re.test(account_email);                    
-                } || ('Invalid Email') 
-            }
-        }
-    },   
-    methods: {
-        checkURL() {            
-            //console.log(this.account_url);
-
-            simplebookService.checkURL(this.account_url)
-            .then(response => {
-                if (response.data.flag == 1) {
-                    this.success_url = "Very Nice! Your link will be: http://simplebook.it/" + this.account_url;
-                } else {
-                    this.success_url = "Sorry! This Account URL is already taken.";
+        name: 'Register',    
+        data: function () {
+            return {
+                account_url: '',
+                success_url: '',
+                show1: false,
+                show2: false,
+                confirm_password: '',
+                original_password: '',
+                account_email: '',
+                success_email: '',
+                rules: {
+                    required: value => !!value || 'Required.',
+                    length: value => value.length >= 5 || 'Minimum 5 characters',  
+                    length8: value => value.length >= 8 || 'Minimum 8 characters',  
+                    passwordMatch: () => ( this.original_password == this.confirm_password ) || (`The email and password you entered don't match`),
+                    validEmail: function(account_email) {
+                        var re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                        return re.test(account_email);                    
+                    } || ('Invalid Email') 
                 }
-              })
-              .catch( () => {
-                    this.success_url = "Sorry! This Account URL is already taken.";
-                });
-          },    
-        togglepass1() {
-                this.show1 = !this.show1;
+            }
+        },   
+        methods: {
+            checkURL() {            
+                //console.log(this.account_url);
+
+                simplebookService.checkURL(this.account_url)
+                .then(response => {
+                    if (response.data.flag == 1) {
+                        this.success_url = "Very Nice! Your link will be: http://simplebook.it/" + this.account_url;
+                    } else {
+                        this.success_url = "Sorry! This Account URL is already taken.";
+                    }
+                })
+                .catch( () => {
+                        this.success_url = "Sorry! This Account URL is already taken.";
+                    });
+            },    
+            checkEmail() {          
+                //console.log(this.account_email);
+                simplebookService.checkEmail(this.account_email)
+                .then(response => {
+                    if (response.data.flag == false) {
+                        this.success_email = "E-mail already in use.";
+                        console.log(response.data.flag);
+                    } else {
+                        this.success_email = "";
+                        console.log(response.data);
+                    }
+                })
+                .catch( () => {
+                        this.success_email = "E-mail invalid.";
+                    });
+            },   
+            togglepass1() {
+                    this.show1 = !this.show1;
             },             
-        togglepass2() {
-                this.show2 = !this.show2;
+            togglepass2() {
+                    this.show2 = !this.show2;
             },             
         }
     };
