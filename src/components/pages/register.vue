@@ -107,8 +107,6 @@
         },   
         methods: {
             checkURL() {            
-                //console.log(this.account_url);
-
                 simplebookService.checkURL(this.account_url)
                 .then(response => {
                     if (response.data.flag == 1) {
@@ -122,15 +120,12 @@
                     });
             },    
             checkEmail() {          
-                //console.log(this.account_email);
                 simplebookService.checkEmail(this.account_email)
                 .then(response => {
                     if (response.data.flag == false) {
                         this.success_email = "E-mail already in use.";
-                        console.log(response.data.flag);
                     } else {
                         this.success_email = "";
-                        console.log(response.data);
                     }
                 })
                 .catch( () => {
