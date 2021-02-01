@@ -22,8 +22,9 @@
                             placeholder="Make it memorable!"
                             outlined
                             v-model="account_url"
-                            @input="checkURL"
                             v-bind:hint=success_url  
+                            :error-messages="errors_url"
+                            @input="checkURL"
                             :rules="[rules.required, rules.length]"                    
                         ></v-text-field>  
                         <HR/><BR/>
@@ -45,6 +46,7 @@
                                 v-model="original_password"
                                 outlined
                                 counter
+                                @input="clear_pass2"
                                 @click:append="togglepass1"
                                 :rules="[rules.required, rules.length8]"                    
                                 ></v-text-field>
@@ -87,6 +89,7 @@
             return {
                 account_url: '',
                 success_url: '',
+                errors_url: '',
                 show1: false,
                 show2: false,
                 confirm_password: '',
@@ -101,24 +104,28 @@
                     validEmail: function(account_email) {
                         var re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
                         return re.test(account_email);                    
-                    } || ('Invalid Email') 
+                    } || ('Invalid Email')
                 }
             }
         },   
         methods: {
-            checkURL() {            
-                simplebookService.checkURL(this.account_url)
-                .then(response => {
-                    if (response.data.flag == 1) {
-                        this.success_url = "Very Nice! Your link will be: http://simplebook.it/" + this.account_url;
-                    } else {
-                        this.success_url = "Sorry! This Account URL is already taken.";
-                    }
-                })
-                .catch( () => {
-                        this.success_url = "Sorry! This Account URL is already taken.";
+            checkURL() {
+                this.errors_url = '';  
+                this.success_url = '';  
+                if (this.account_url && this.account_url.length > 4) {
+                    simplebookService.checkURL(this.account_url)
+                    .then(response => {
+                        if (response.data.flag == true) {
+                            this.success_url = "Very Nice! Your link will be: http://simplebook.it/" + this.account_url;
+                        } else {
+                            this.errors_url = "Sorry, URL already taken.";
+                        }
+                    })
+                    .catch( () => {
+                            this.errors_url = "Sorry! This Account URL is not valid.";
                     });
-            },    
+                }
+            },
             checkEmail() {          
                 simplebookService.checkEmail(this.account_email)
                 .then(response => {
@@ -138,6 +145,9 @@
             togglepass2() {
                     this.show2 = !this.show2;
             },             
+            clear_pass2() {
+                this.confirm_password = "";
+            }
         }
     };
 
