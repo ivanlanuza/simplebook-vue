@@ -7,7 +7,19 @@ class simplebookService {
 
     checkEmail(data) {
         return http.get(`/account-email-check/${data}`);        
-    }    
+    }  
+    
+    createAccount(data) {
+        return http.post(`/account-create`, data);
+    }
+    
+    displayAccount() {
+        return http.get(`/account-display`, {
+            headers: {
+                "x-access-token": localStorage.getItem('user-token')
+            }
+        });   
+    }
 }
 
 export default new simplebookService();

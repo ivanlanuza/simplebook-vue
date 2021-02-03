@@ -15,6 +15,7 @@
                         <v-text-field
                             label="Company Name"
                             placeholder="Be proud, captain!"
+                            v-model="account_name"
                             outlined
                             :rules="[rules.required]"                    
                         ></v-text-field>  
@@ -85,11 +86,13 @@
 
 <script>
     import simplebookService from "../../services/simplebook.services";
+    //import axios from "axios";
 
     export default {
         name: 'Register',    
         data: function () {
             return {
+                account_name: '',
                 account_url: '',
                 success_url: '',
                 errors_url: '',
@@ -179,12 +182,25 @@
             },
             submitForm() {
                 if(this.$refs.form.validate() == true 
-                    && this.val_url_unused == true
-                    && this.val_url_chars == true
-                    && this.val_email_unused == true
-                    && this.val_email_chars == true
-                    ) {
-                    alert('all clear');
+                && this.val_url_unused == true
+                && this.val_url_chars == true
+                && this.val_email_unused == true
+                && this.val_email_chars == true) {
+                    var pass_data = {"account_url": this.account_url, 
+                                "account_email": this.account_email,
+                                "account_name": this.account_name,
+                                "user_password": this.original_password
+                                };
+                    //var msg;
+                    simplebookService.createAccount(pass_data).then( 
+                        resp => {
+                            const token = resp.data.accessToken;
+                            localStorage.setItem('user-token', token);
+                            //axios.defaults.headers.common['x-access-token'] = token;
+                            this.$router.push('/initial-account');
+                        });
+                    //console.log("return msg " + msg);
+                    
                 }
             }
         }

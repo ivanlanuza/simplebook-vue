@@ -16,6 +16,10 @@ export default new Router({
             name: "home",
             component: () => import("../components/pages/home.vue")
         },
-
+        {
+            path: "/initial-account",
+            name: "intiialaccount",
+            component: () => import("../components/pages/initial-account.vue")
+        },
     ]
 });
